@@ -1,11 +1,11 @@
 #include "scanner.hpp"
 #include <cctype>
 #include <fstream>
+#include <iostream>
 #include <string>
-#include <string_view>
 #include <vector>
 
-Scanner::Scanner(std::string_view path) {
+Scanner::Scanner(std::string &path) {
   std::ifstream file(path);
   contents = std::vector(std::istreambuf_iterator<char>(file),
                          std::istreambuf_iterator<char>());
@@ -34,16 +34,19 @@ auto Scanner::scan_token() -> void {
     tokens.emplace_back(Token::Comma);
   } else if (c == '"') {
     std::string s;
-    while (advance() != '"') {
+    while ((c = advance()) != '"') {
       s.push_back(c);
     }
     tokens.emplace_back(Token::String, s);
   } else if (c == 't' || c == 'f') {
     tokens.emplace_back(Token::Bool, c == 't');
+    while (std::isalpha(peek())) {
+      advance();
+    }
   } else if (std::isdigit(c)) {
     std::string digits{c};
     bool is_float = false;
-    while (peek() != ',') {
+    while (std::isdigit(peek()) || peek() == '.') {
       is_float = peek() == '.' || is_float;
       digits.push_back(advance());
     }

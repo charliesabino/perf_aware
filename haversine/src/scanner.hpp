@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <string>
+#include <sys/_types/_u_int32_t.h>
 #include <variant>
 #include <vector>
 #undef EOF
@@ -26,12 +27,12 @@ struct Token {
 class Scanner {
   std::vector<char> contents{};
   std::vector<Token> tokens{};
-  int idx{};
+  u_int32_t idx{};
   auto scan_token() -> void;
   auto advance() -> char { return contents[idx++]; }
   auto peek() const -> char { return contents[idx]; }
 
 public:
-  Scanner(std::string_view path);
+  Scanner(std::string &path);
   auto scan() -> std::vector<Token> &;
 };

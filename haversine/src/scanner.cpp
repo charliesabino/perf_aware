@@ -43,7 +43,7 @@ auto Scanner::scan_token() -> void {
     while (std::isalpha(peek())) {
       advance();
     }
-  } else if (std::isdigit(c)) {
+  } else if (std::isdigit(c) || c == '-') {
     std::string digits{c};
     bool is_float = false;
     while (std::isdigit(peek()) || peek() == '.') {

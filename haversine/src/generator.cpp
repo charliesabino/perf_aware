@@ -34,7 +34,8 @@ auto gen_data(int32_t num_points) -> std::string {
                        y0, x1, y1);
     }
   }
-  f << "]}";
+  f << "]}" << std::flush;
+  f.close(); // Explicitly close the file to ensure all data is written
 
   std::cout << "Real Sum: " << std::fixed << std::setprecision(16) << sum
             << std::endl;

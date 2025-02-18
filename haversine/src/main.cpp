@@ -3,11 +3,13 @@
 #include "parser.hpp"
 #include "scanner.hpp"
 #include <chrono>
+#include <cstdint>
 #include <cstdlib>
 #include <iomanip>
 #include <ios>
 #include <iostream>
 #include <ostream>
+#include <sys/_types/_u_int64_t.h>
 #include <vector>
 
 auto compute(JsonObject &obj) -> double {
@@ -38,12 +40,20 @@ int main(int argc, char *argv[]) {
 
   auto measure_time = []<typename F>(std::string_view label, F &&func) {
     auto start_time = std::chrono::high_resolution_clock::now();
+    uint64_t start_cycles{}, end_cycles{};
+    asm volatile("mrs %0, cntvct_el0" : "=r"(start_cycles));
+
     auto result = std::forward<F>(func)();
+    asm volatile("mrs %0, cntvct_el0" : "=r"(end_cycles));
     auto end_time = std::chrono::high_resolution_clock::now();
 
     auto duration = std::chrono::duration<double>{end_time - start_time};
+    auto cycles = end_cycles - start_cycles;
+
     std::cout << label << " Time: " << std::fixed << std::setprecision(8)
               << duration.count() << "s\n";
+
+    std::cout << label << " Cycles: " << cycles << '\n';
 
     return result;
   };

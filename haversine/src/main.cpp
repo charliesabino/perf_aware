@@ -11,14 +11,15 @@
 #include <sys/_types/_u_int64_t.h>
 #include <vector>
 
-auto compute(JsonObject &obj) -> double {
+auto compute(const auto &points) -> double {
   double sum{};
 
-  auto points = std::get<std::vector<JsonValue>>(obj["points"]);
+  TimeBandwidth(points.size() * sizeof(double) * 4 + points.size() * 8);
+
   for (auto &v : points) {
     auto obj = std::get<JsonObject>(v);
     std::vector<double> coords(4);
-    for (auto [k, v] : obj) {
+    for (auto &[k, v] : obj) {
       int i{};
       if (k == "y0")
         i = 1;
@@ -44,7 +45,7 @@ int main(int argc, char *argv[]) {
 
   auto obj = parse(tokens);
 
-  auto sum = compute(obj);
+  auto sum = compute(std::get<std::vector<JsonValue>>(obj["points"]));
 
   std::cout << "Computed Sum: " << std::fixed << std::setprecision(16) << sum
             << std::endl;

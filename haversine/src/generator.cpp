@@ -1,4 +1,5 @@
 #include "haversine.hpp"
+#include "profile.hpp"
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -11,6 +12,7 @@ auto get_rand(std::mt19937 &gen, double min, double max) -> double {
 }
 
 auto gen_data(int32_t num_points) -> std::string {
+  TimeFunction;
   double sum{};
   std::random_device rd;
   std::mt19937 gen(rd());

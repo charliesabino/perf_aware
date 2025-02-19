@@ -1,11 +1,13 @@
 #include "scanner.hpp"
 #include "profile.hpp"
 #include <cctype>
+#include <filesystem>
 #include <fstream>
 #include <string>
 #include <vector>
 
 Scanner::Scanner(std::string &path) {
+  TimeBandwidth(std::filesystem::file_size(path));
   std::ifstream file(path);
   contents = std::vector(std::istreambuf_iterator<char>(file),
                          std::istreambuf_iterator<char>());

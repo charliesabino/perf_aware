@@ -1,6 +1,6 @@
 
 #include "parser.hpp"
-#include <algorithm>
+#include "profile.hpp"
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -93,6 +93,7 @@ auto parse(std::vector<Token> &tokens, int start) -> std::pair<int, JsonValue> {
 }
 
 auto parse(std::vector<Token> &tokens) -> JsonObject {
+  TimeFunction;
   if (tokens.empty()) {
     return JsonObject{};
   }

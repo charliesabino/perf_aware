@@ -1,9 +1,8 @@
 #include "generator.hpp"
 #include "haversine.hpp"
 #include "parser.hpp"
+#include "profile.hpp"
 #include "scanner.hpp"
-#include <chrono>
-#include <cstdint>
 #include <cstdlib>
 #include <iomanip>
 #include <ios>
@@ -35,41 +34,20 @@ auto compute(JsonObject &obj) -> double {
 }
 
 int main(int argc, char *argv[]) {
+  begin_profile();
   auto num_points = atoi(argv[1]);
   std::cout << "# Points: " << num_points << std::endl;
 
-  auto measure_time = []<typename F>(std::string_view label, F &&func) {
-    auto start_time = std::chrono::high_resolution_clock::now();
-    uint64_t start_cycles{}, end_cycles{};
-    asm volatile("mrs %0, cntvct_el0" : "=r"(start_cycles));
+  auto path = gen_data(num_points);
+  Scanner s(path);
+  auto tokens = s.scan();
 
-    auto result = std::forward<F>(func)();
-    asm volatile("mrs %0, cntvct_el0" : "=r"(end_cycles));
-    auto end_time = std::chrono::high_resolution_clock::now();
+  auto obj = parse(tokens);
 
-    auto duration = std::chrono::duration<double>{end_time - start_time};
-    auto cycles = end_cycles - start_cycles;
-
-    std::cout << label << " Time: " << std::fixed << std::setprecision(8)
-              << duration.count() << "s\n";
-
-    std::cout << label << " Cycles: " << cycles << '\n';
-
-    return result;
-  };
-
-  auto path =
-      measure_time("Generation", [&]() { return gen_data(num_points); });
-
-  auto tokens = measure_time("Scan", [&]() {
-    Scanner s(path);
-    return s.scan();
-  });
-
-  auto obj = measure_time("Parse", [&]() { return parse(tokens); });
-
-  auto sum = measure_time("Compute", [&]() { return compute(obj); });
+  auto sum = compute(obj);
 
   std::cout << "Computed Sum: " << std::fixed << std::setprecision(16) << sum
             << std::endl;
+
+  end_and_print_profile();
 }

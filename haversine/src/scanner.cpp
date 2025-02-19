@@ -1,7 +1,7 @@
 #include "scanner.hpp"
+#include "profile.hpp"
 #include <cctype>
 #include <fstream>
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -12,6 +12,7 @@ Scanner::Scanner(std::string &path) {
 }
 
 auto Scanner::scan() -> std::vector<Token> & {
+  TimeFunction;
   while (idx < contents.size()) {
     scan_token();
   }

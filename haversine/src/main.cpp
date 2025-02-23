@@ -3,9 +3,9 @@
 #include "parser.hpp"
 #include "profile.hpp"
 #include "scanner.hpp"
+#include <cstdint>
 #include <cstdlib>
 #include <iomanip>
-#include <ios>
 #include <iostream>
 #include <ostream>
 #include <sys/_types/_u_int64_t.h>
@@ -36,7 +36,7 @@ auto compute(const auto &points) -> double {
 
 int main(int argc, char *argv[]) {
   begin_profile();
-  auto num_points = atoi(argv[1]);
+  uint32_t num_points = atoi(argv[1]);
   std::cout << "# Points: " << num_points << std::endl;
 
   auto path = gen_data(num_points);
@@ -47,8 +47,8 @@ int main(int argc, char *argv[]) {
 
   auto sum = compute(std::get<std::vector<JsonValue>>(obj["points"]));
 
-  std::cout << "Computed Sum: " << std::fixed << std::setprecision(16) << sum
-            << std::endl;
+  std::cout << "Computed Average Sum: " << std::setprecision(12)
+            << (sum / num_points) << std::endl;
 
   end_and_print_profile();
 }

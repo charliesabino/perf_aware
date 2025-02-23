@@ -88,7 +88,7 @@ inline auto print_time_elapsed(uint64_t total_tsc_elapsed,
         static_cast<double>(anchor.bytes_processed) / (seconds * 1024 * 1024);
     auto mb_processed =
         static_cast<double>(anchor.bytes_processed) / (1024 * 1024);
-    std::cout << " - " << std::setprecision(2) << bandwidth << " MB/s ("
+    std::cout << " - " << std::setprecision(6) << bandwidth << " MB/s ("
               << std::setprecision(2) << mb_processed << " MB total)";
   }
   std::cout << std::endl;

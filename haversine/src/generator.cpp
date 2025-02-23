@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <random>
 
@@ -21,14 +22,14 @@ auto gen_data(int32_t num_points) -> std::string {
   std::ofstream f(path);
   f << "{\"points\": [";
 
-  while (num_points--) {
+  for (auto i = 0; i < num_points; i++) {
     auto x0 = get_rand(gen, -180, 180);
     auto x1 = get_rand(gen, -180, 180);
     auto y0 = get_rand(gen, -90, 90);
     auto y1 = get_rand(gen, -90, 90);
     sum += haversine(x0, y0, x1, y1, EARTH_RADIUS);
 
-    if (num_points > 0) {
+    if (i != num_points - 1) {
       f << std::format("{{\"x0\": {}, \"y0\": {}, \"x1\": {}, \"y1\": {}}},",
                        x0, y0, x1, y1);
     } else {
@@ -36,11 +37,12 @@ auto gen_data(int32_t num_points) -> std::string {
                        y0, x1, y1);
     }
   }
-  f << "]}" << std::flush;
-  f.close(); // Explicitly close the file to ensure all data is written
+  f << "]}";
 
-  std::cout << "Real Sum: " << std::fixed << std::setprecision(16) << sum
-            << std::endl;
+  f.close();
+
+  std::cout << "Real Average Sum: " << std::setprecision(12)
+            << (sum / num_points) << std::endl;
 
   return path;
 }

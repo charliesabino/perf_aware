@@ -8,7 +8,6 @@
 #include <iomanip>
 #include <iostream>
 #include <ostream>
-#include <sys/_types/_u_int64_t.h>
 #include <vector>
 
 auto compute(const auto &points) -> double {

@@ -7,10 +7,17 @@
 #include <ostream>
 #include <string_view>
 #include <thread>
+#include <x86intrin.h>
 
 inline auto rdtsc() -> uint64_t {
   uint64_t start_cycles;
+
+#if defined(__linux__) || defined(__linux) || defined(linux)
+  start_cycles = __rdtsc();
+#elif defined(__APPLE__) || defined(__MACH__)
   asm volatile("mrs %0, cntvct_el0" : "=r"(start_cycles));
+#endif
+
   return start_cycles;
 }
 
@@ -52,7 +59,6 @@ struct Profiler {
 };
 
 inline Profiler global_profiler{};
-
 struct ProfileBlock {
   std::string_view label{};
   uint32_t anchor_idx{};
@@ -102,7 +108,7 @@ inline auto end_and_print_profile() -> void {
   auto total_tsc_elapsed = global_profiler.end_tsc - global_profiler.start_tsc;
   std::cout << "Total time: "
             << static_cast<double>(1000 * total_tsc_elapsed) / freq
-            << " (CPU freq: " << freq << ")\n";
+            << "ms (CPU freq: " << freq << ")\n";
   for (auto &anchor : global_profiler.anchors) {
     if (anchor.tsc_elapsed != 0) {
       print_time_elapsed(total_tsc_elapsed, anchor);
